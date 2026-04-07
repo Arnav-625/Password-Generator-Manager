@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: rgb(187, 180, 180);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            background-color: rgb(222, 223, 164);
+            width: 400px;
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: 20px;
+        }
+
+        .search {
+            width: 50%;
+            padding: 16px;
+            border: none;
+            border-radius: 30px;
+            background: #33a530;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .password-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 2px solid #5b8aa5;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .copy-btn {
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 2px solid #5b8aa5;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .options {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .slider-section {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .length-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .counter-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #5b8aa5;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        #len-val {
+            font-weight: bold;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #33a530;
+        }
+    </style>
+
+<body>
+    <div class="page">
+        <h1>Find Your Password</h1>
+
+        <input type="text" id="email-input" placeholder="Email" style="display: block; margin: 20px 50px; width: 70%;">
+        <button class="search" onclick="search()">Search</button>
+
+        <!-- Result box -->
+        <div id="result" style="display:none; margin-top: 20px;">
+            <p style="margin-bottom: 8px; font-size: 14px; color: #444;">Your Password:</p>
+            <div class="password-box" style="margin-bottom: 0; margin-left: 50px;">
+                <input type="text" id="result-pwd" readonly>
+                <button class="copy-btn" onclick="copy()">📋</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+async function search() {
+    const email = document.getElementById('email-input').value;
+    if (!email) return;
+
+    const res = await fetch("http://localhost:5000/search", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email})
+    });
+
+    const data = await res.json();
+
+    document.getElementById('result-pwd').value = data.password;
+    document.getElementById('result').style.display = 'block';
+}
+
+function copy() {
+    const pwd = document.getElementById('result-pwd').value;
+    navigator.clipboard.writeText(pwd);
+}
+</script>
+</body>
+
+</html>

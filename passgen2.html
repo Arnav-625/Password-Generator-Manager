@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: rgb(187, 180, 180);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            background-color: rgb(222, 223, 164);
+            width: 400px;
+            text-align: center;
+            padding: 50px 40px;
+            border-radius: 20px;
+        }
+
+        .continue {
+            width: 50%;
+            padding: 16px;
+            border: none;
+            border-radius: 30px;
+            background: #33a530;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .password-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 2px solid #5b8aa5;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .copy-btn {
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 2px solid #5b8aa5;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .slider-section {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .length-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .counter-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #5b8aa5;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        #len-val {
+            font-weight: bold;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #33a530;
+        }
+    </style>
+
+<body>
+    <div class="page">
+        <h1>Password Generator</h1>
+
+        <input type="text" placeholder="Email" style="display: block; margin: 20px 50px; width: 70%;">
+
+        <div class="password-box" id="password-box" style="display:none;">
+            <input type="text" id="generated-password" placeholder="Password">
+            <button class="copy-btn">📋</button>
+        </div>
+
+        <div class="slider-section">
+            <div class="slider-label">
+                <span>Password Length</span>
+                <div class="length-counter">
+                    <button class="counter-btn" onclick="changeLen(-1)">−</button>
+                    <span id="len-val">12</span>
+                    <button class="counter-btn" onclick="changeLen(1)">+</button>
+                </div>
+            </div>
+            <input type="range" min="6" max="32" value="12" id="len-slider" oninput="updateLen(this.value)">
+        </div>
+
+        <button class="continue" onclick="showPassword()">Generate</button>
+    </div>
+
+    <script>
+        // Add the missing slider logic
+        function updateLen(val) {
+            document.getElementById('len-val').innerText = val;
+        }
+    
+        function changeLen(step) {
+            const slider = document.getElementById('len-slider');
+            let newVal = parseInt(slider.value) + step;
+            if (newVal >= parseInt(slider.min) && newVal <= parseInt(slider.max)) {
+                slider.value = newVal;
+                updateLen(newVal);
+            }
+        }
+    
+        async function showPassword() {
+            const email = document.querySelector('input[placeholder="Email"]').value;
+            // Grab the length from the slider
+            const length = document.getElementById('len-slider').value; 
+            
+            if (!email) return;
+    
+            const res = await fetch("http://localhost:5000/generate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                // Send length to Flask
+                body: JSON.stringify({ email: email, length: parseInt(length) }) 
+            });
+    
+            const data = await res.json();
+    
+            const box = document.getElementById('password-box');
+            box.style.display = 'flex';
+            box.querySelector('input').value = data.password;
+        }
+    </script>
+</body>
+
+</html>
